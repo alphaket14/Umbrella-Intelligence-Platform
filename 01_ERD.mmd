@@ -1,0 +1,37 @@
+```mermaid
+erDiagram
+    meta.tenants ||--o{ meta.orgs : contains
+    meta.tenants ||--o{ core.dim_identity : scopes
+    meta.tenants ||--o{ raw.raw_dns_activity : owns
+    meta.tenants ||--o{ core.fact_dns_activity_15m : owns
+    meta.tenants ||--o{ mart.weekly_kpis_umbrella : owns
+    meta.tenants ||--o{ mart.exec_delta_weekly : owns
+    meta.tenants ||--o{ mart.policy_simulation_weekly : owns
+    meta.orgs ||--o{ raw.raw_dns_activity : provides
+
+    core.dim_identity ||--o{ core.fact_dns_activity_15m : referenced-by
+    core.dim_domain ||--o{ core.fact_dns_activity_15m : referenced-by
+    core.dim_domain ||--o{ core.bridge_domain_relation : relates
+    core.dim_domain ||--o{ core.dim_domain_tenant : extended-by
+    core.dim_category ||--o{ core.fact_content_blocks_15m : referenced-by
+    core.dim_app_saas ||--o{ core.fact_casb_app_usage_daily : referenced-by
+    core.dim_cdfw_rule ||--o{ core.fact_cdfw_events_15m : referenced-by
+    core.dim_policy ||--o{ core.fact_dns_activity_15m : governed-by
+
+    core.dim_site ||--o{ core.bridge_identity_site : maps
+    core.dim_department ||--o{ core.bridge_identity_department : maps
+    core.bridge_identity_site ||--o{ core.dim_identity : contextualizes
+    core.bridge_identity_department ||--o{ core.dim_identity : contextualizes
+
+    core.fact_dns_activity_15m ||--o{ core.fact_dns_activity_daily : rolls-up
+    core.fact_dns_activity_15m ||--o{ core.fact_content_blocks_15m : expands
+
+    core.fact_dns_activity_daily ||--o{ mart.weekly_kpis_umbrella : feeds
+    core.fact_domain_enrich_daily ||--o{ mart.advanced_detections_weekly : feeds
+    core.bridge_domain_relation ||--o{ mart.domain_relation_weekly : rolls-up
+
+    mart.weekly_kpis_umbrella ||--o{ mart.exec_delta_weekly : deltas
+    mart.weekly_kpis_umbrella ||--o{ ai.weekly_exec : summarized-by
+    ai.baselines ||--o{ ai.insights : supports
+    ai.insights ||--o{ ai.recommendations : results-in
+```
